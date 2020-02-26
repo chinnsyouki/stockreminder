@@ -42,7 +42,7 @@ def getJslData():
     try :
         jsl = requests.get(url=jslUrl)
     except :
-        print("Unexpected error:", sys.exc_info()[0])
+        sendMessage(text = '发生未知错误！' , desp = '访问集思录网站获取数据失败，请检查代码接口！')
         raise
 
     data = jsl.json()
@@ -95,4 +95,4 @@ else :
             desp = desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
         
         sendMessage(text = text , desp = desp)
-        print('消息内容：\n' + desp)gi
+        #print('消息内容：\n' + desp)
