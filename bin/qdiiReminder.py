@@ -57,12 +57,13 @@ def getJslData():
 
     #stocks = stocks.set_index('fund_id')
     #截取需要用到的字段
-    stocks = stocks.loc[:,['fund_id','fund_nm','discount_rt','price','price_dt','fund_nav','nav_dt','estimate_value','est_val_dt','apply_status','apply_fee','redeem_status','redeem_fee','last_est_datetime']]
+    stocks = stocks.loc[:,['fund_id','fund_nm','discount_rt','price','price_dt','fund_nav','nav_dt','estimate_value','est_val_dt','amount_incr','apply_status','apply_fee','redeem_status','redeem_fee','last_est_datetime']]
 
     #去除百分比%字符
     stocks['discount_rt'] = stocks['discount_rt'].str.replace('%','')
     #将字符串转化为数字格式
     stocks['discount_rt'] = pd.to_numeric(stocks['discount_rt'],errors='ignore')
+    stocks['amount_incr'] = pd.to_numeric(stocks['amount_incr'],errors='ignore')
 
     return stocks
 
@@ -82,8 +83,8 @@ else :
     #获取集思录数据
     stocks = getJslData()
 
-    #选取出溢价率大于2%且开放申赎的基金
-    selected = stocks[(abs(stocks['discount_rt']) >= 2) & (stocks['apply_status'].str.contains('开放')) & (stocks['redeem_status'].str.contains('开放'))]
+    #选取出溢价率大于2%且开放申赎且有新增场内份额的基金
+    selected = stocks[(abs(stocks['discount_rt']) >= 2) & (stocks['apply_status'].str.contains('开放')) & (stocks['redeem_status'].str.contains('开放')) & (stocks['amount_incr'] > 0 )]
 
     #若有符合条件的基金则发送消息
     if selected.empty == False:
@@ -94,4 +95,4 @@ else :
             desp = desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
         
         sendMessage(text = text , desp = desp)
-        print('消息内容：\n' + desp)
+        print('消息内容：\n' + desp)gi
