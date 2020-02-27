@@ -21,18 +21,26 @@ def isHoliday(date):
 
 
 #发送微信消息提醒
-def sendMessage(text,desp):
-    #server酱消息发送接口
-    severUrl = 'https://sc.ftqq.com/SCU80469T3f7f6cd2cc99acb1eace952a841df5835e3da00e0cc93.send'
-    paramaters = {'text':text,'desp':desp}
+def sendMessage(title,text):
+    #wxPusher消息发送接口
+    severUrl = 'http://wxpusher.zjiecode.com/api/send/message'
+    paramaters = {
+        #证券交易提醒的token
+        "appToken":"AT_awCxNJvY4xqWek40uB7xXUvbS8X0hUtk",
+        #发送目标的UID，是一个数组！！！
+        "uids":[ "UID_4KEgQdVFBw7ciEX4u0A9HTmuHoEL" ],
+        #内容类型 1表示文字  2表示html(只发送body标签内部的数据即可，不包括body标签) 3表示markdown 
+        "contentType":3,
+        "content":"【"+ title +"】\n\n" + text
+}
 
-    response = requests.get(url=severUrl,params=paramaters)
+    response = requests.post(url=severUrl,json=paramaters)
     result = response.json()
     
-    if result['errno'] == 0 :
+    if result['success'] == True :
         print('消息发送成功~~')
     else :
-        print('消息发送失败！错误信息：' + result['errmsg'])
+        print('消息发送失败！错误信息：' + result['msg'])
 
 #从集思录获取数据
 def getJslData():
@@ -42,7 +50,7 @@ def getJslData():
     try :
         jsl = requests.get(url=jslUrl)
     except :
-        sendMessage(text = '发生未知错误！' , desp = '访问集思录网站获取数据失败，请检查代码接口！')
+        sendMessage(title = '发生未知错误！' , text = '访问集思录网站获取数据失败，请检查代码接口！')
         raise
 
     data = jsl.json()
@@ -88,11 +96,11 @@ else :
 
     #若有符合条件的基金则发送消息
     if selected.empty == False:
-        text = '当前可进行套利操作！'
+        title = '当前可进行套利操作！'
         desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
         #编辑消息详情
         for index,fund in selected.iterrows():
             desp = desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
         
-        sendMessage(text = text , desp = desp)
-        #print('消息内容：\n' + desp)
+        sendMessage(title = title , text = desp)
+        #print('消息内容：\n' + text)
