@@ -94,7 +94,9 @@ else :
     selected = stocks[stocks['apply_date']==today2]
 
     #若有符合条件的基金则发送消息
-    if selected.empty == False:
+    if selected.empty == True:
+        print('今天没有可申购的可转债~')
+    else :
         title = '今日有可申购的可转债！'
         desp = '申购代码 | 可转债名称 | 正股名称 | 类型 | 评级 \n\n'
         #编辑消息详情

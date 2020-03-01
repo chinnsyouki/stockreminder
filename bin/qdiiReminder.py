@@ -91,11 +91,13 @@ else :
     #获取集思录数据
     stocks = getJslData()
 
-    #选取出溢价率大于2%且开放申赎且有新增场内份额的基金
-    selected = stocks[(abs(stocks['discount_rt']) >= 2) & (stocks['apply_status'].str.contains('开放')) & (stocks['redeem_status'].str.contains('开放')) & (stocks['amount_incr'] > 0 )]
+    #选取出溢价率大于4%且开放申赎且有新增场内份额的基金
+    selected = stocks[(abs(stocks['discount_rt']) >= 4) & (stocks['apply_status'].str.contains('开放')) & (stocks['redeem_status'].str.contains('开放')) & (stocks['amount_incr'] > 0 )]
 
     #若有符合条件的基金则发送消息
-    if selected.empty == False:
+    if selected.empty == True:
+        print('当前没有符合套利条件的基金~')
+    else :
         title = '当前可进行套利操作！'
         desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
         #编辑消息详情
