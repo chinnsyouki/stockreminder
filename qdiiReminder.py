@@ -1,14 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("..")
 
 import requests
 import pandas as pd
 import datetime
 import pytz
-import common.DataApi as DataApi
-import common.Helper as Helper
+from common import DataApi,Helper
+
 
 #定义时区=东八区
 tz = pytz.timezone('Asia/Shanghai')
@@ -16,6 +14,8 @@ tz = pytz.timezone('Asia/Shanghai')
 now = datetime.datetime.now(tz)
 #格式化日期时间
 today = now.strftime('%Y%m%d')
+#测试
+#today = '20200306'
 
 #仅在工作日执行后续操作
 tradeDay = Helper.TradeDay()

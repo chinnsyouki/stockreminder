@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import sys
-sys.path.append("..")
 
 import requests
 import pandas as pd
