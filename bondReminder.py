@@ -27,7 +27,6 @@ else :
     jslData = DataApi.JslData()
     stocks = jslData.getBondData()
 
-    #选取出溢价率大于2%且开放申赎且有新增场内份额的基金
     today2 = now.strftime('%Y-%m-%d')
     #today2 = '2020-02-28'
     selected = stocks[stocks['apply_date']==today2]

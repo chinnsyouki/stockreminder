@@ -24,10 +24,12 @@ if tradeDay.isHoliday(today) == False :
 else :
     #获取集思录数据
     jslData = DataApi.JslData()
-    stocks = jslData.getQdiiData()
+    qdiiData = jslData.getQdiiData()
+    stockLofData = jslData.getStockLofData()
+    indexLofData = jslData.getIndexLofData()
 
-    #选取出溢价率大于4%且开放申赎且有新增场内份额的基金
-    selected = stocks[(abs(stocks['discount_rt']) >= 4) & (stocks['apply_status'].str.contains('开放')) & (stocks['redeem_status'].str.contains('开放')) & (stocks['amount_incr'] > 0 )]
+    #将三张表合并在一起
+    selected = pd.concat([qdiiData,stockLofData,indexLofData],axis=0,join='outer')
 
     #若有符合条件的基金则发送消息
     if selected.empty == True:
