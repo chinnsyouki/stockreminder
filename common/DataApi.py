@@ -4,19 +4,22 @@
 import requests
 import pandas as pd
 import common.Helper as Helper
+from bs4 import BeautifulSoup
 
 
 #从集思录获取数据源
 class JslData():
     def __init__(self):
+        #集思录首页
+        self.url = 'https://www.jisilu.cn/'
         #集思录网址可转债查询接口
-        self.bondUrl = 'https://www.jisilu.cn/data/cbnew/pre_list/?___jsl=LST___t'
+        self.bondUrl = self.url + 'data/cbnew/pre_list/?___jsl=LST___t'
         #集思录网址QDII基金查询接口
-        self.qdiiUrl = 'https://www.jisilu.cn/data/qdii/qdii_list/?___jsl=LST___t'
+        self.qdiiUrl = self.url +'data/qdii/qdii_list/?___jsl=LST___t'
         #集思录网址股票LOF基金查询接口
-        self.stockLofUrl = 'https://www.jisilu.cn/data/lof/stock_lof_list/?___jsl=LST___t'
+        self.stockLofUrl = self.url +'data/lof/stock_lof_list/?___jsl=LST___t'
         #集思录网址指数LOF基金查询接口
-        self.indexLofUrl = 'https://www.jisilu.cn/data/lof/index_lof_list/?___jsl=LST___t'
+        self.indexLofUrl = self.url +'data/lof/index_lof_list/?___jsl=LST___t'
 
     #从网站获取数据并存储为DataFrame格式
     def getDate(self,serverUrl):
@@ -70,7 +73,7 @@ class JslData():
         (stocks['redeem_status'].str.contains('开放') == True) &  #开放赎回
         (stocks['amount_incr'] > 0 ) &                            #场内有新增份额
         (stocks['fund_nm'].str.contains('ETF') == False) &       #非ETF基金
-        (stocks['volume'] >= 500)]                               #成交量不小于500万
+        (stocks['volume'] >= 500)].sort_values('discount_rt',ascending=False)   #成交量不小于500万
 
         #截取需要用到的字段
         selected = selected.loc[:,['fund_id','fund_nm','discount_rt','price','estimate_value']]
@@ -91,3 +94,56 @@ class JslData():
     def getIndexLofData(self):
         indexLof = self.getFundData(self.indexLofUrl)
         return indexLof
+
+#从haoETF获取原油基金的数据
+class HaoEtfData():
+    def __init__(self):
+        #haoETF首页
+        self.url = 'http://haoetf.com/'
+
+    def getOilFundData(self):
+        try:
+            html = requests.get(url = self.url).content.decode('utf-8')
+        except :
+            wxPusher = Helper.WxPusher()
+            wxPusher.sendMessage(title = '发生未知错误！' , text = '访问haoETF网站获取数据失败，请检查代码接口！')
+            raise
+
+        soup = BeautifulSoup(html,features='lxml')
+
+        #获取表头
+        thead = soup.body.table.thead.tr
+
+        thead_list = []
+        for th in thead.contents :
+            if th.string != '\n' :
+                thead_list.append(th.string)
+        
+        #获取表内容
+        tbody = soup.body.table.tbody
+
+        tr_list = []
+        for tr in tbody.find_all('tr'):
+            td_list = []
+            for td in tr.find_all('td'):
+                td_list.append(td.string)
+            tr_list.append(td_list)
+
+        #创建表
+        table = pd.DataFrame(tr_list,columns=thead_list)
+
+        #去除百分比%字符
+        table['溢价率'] = table['溢价率'].str.replace('%','')
+        #将字符串转化为数字格式
+        table['溢价率'] = pd.to_numeric(table['溢价率'],errors='ignore')
+        table['成交额(万元)'] = pd.to_numeric(table['成交额(万元)'],errors='ignore')
+
+        #选取溢价率超过2%且成交额>500万且不开放申购的基金，按照降序排列
+        table = table[(table['溢价率'] > 2)  & 
+                (table['限购(元)'].str.contains('暂停') == False) &
+                (table['成交额(万元)'] > 500)].sort_values('溢价率',ascending=False)
+
+        #截取需要用到的字段
+        seleted = table.loc[:,['代码','名称','溢价率','现价','T-1估值']]
+
+        return seleted

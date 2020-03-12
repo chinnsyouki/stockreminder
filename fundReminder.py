@@ -31,16 +31,32 @@ else :
     #将三张表合并在一起
     selected = pd.concat([qdiiData,stockLofData,indexLofData],axis=0,join='outer')
 
+    #获取haoETF原油数据
+    haoEtfData = DataApi.HaoEtfData()
+    oilLofData = haoEtfData.getOilFundData()
+
     #若有符合条件的基金则发送消息
-    if selected.empty == True:
+    if selected.empty == True & oilLofData.empty == True:
         print('当前没有符合套利条件的基金~')
-    else :
-        title = '当前可进行套利操作！'
-        desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
-        #编辑消息详情
+    else :        
+        #编辑集思录消息详情
+        jsl_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
         for index,fund in selected.iterrows():
-            desp = desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
+            jsl_desp = jsl_desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
+        
+        jsl_desp = jsl_desp + '数据来源：[集思录]('+ jslData.url +') \n\n'
+
+        #编辑haoETF原油基金估值详情
+        oil_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
+        for index,oil in oilLofData.iterrows():
+            oil_desp = oil_desp + oil['代码'] + ' | ' + oil['名称'] + ' | ' + str(oil['溢价率'])+'% | ' + oil['现价'] +' | '+oil['T-1估值'] + '\n\n'
+        
+        oil_desp = oil_desp + '数据来源：[HaoETF]('+ haoEtfData.url +') \n\n'
+
+        #发送消息通知
+        title = '当前可进行套利操作！'
+        text = jsl_desp + oil_desp
         
         wxPusher = Helper.WxPusher()
-        wxPusher.sendMessage(title = title , text = desp)
+        wxPusher.sendMessage(title = title , text = text)
         #print('消息内容：\n' + text)
