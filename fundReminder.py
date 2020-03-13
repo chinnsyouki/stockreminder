@@ -49,7 +49,7 @@ else :
         #编辑haoETF原油基金估值详情
         oil_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
         for index,oil in oilLofData.iterrows():
-            oil_desp = oil_desp + oil['代码'] + ' | ' + oil['名称'] + ' | ' + str(oil['溢价率'])+'% | ' + oil['现价'] +' | '+oil['T-1估值'] + '\n\n'
+            oil_desp = oil_desp + oil['代码'] + ' | ' + oil['名称'] + ' | ' + str(oil['实时溢价'])+'% | ' + oil['现价'] +' | '+oil['T-1估值'] + '\n\n'
         
         oil_desp = oil_desp + '数据来源：[HaoETF]('+ haoEtfData.url +') \n\n'
 

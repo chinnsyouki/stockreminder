@@ -133,17 +133,17 @@ class HaoEtfData():
         table = pd.DataFrame(tr_list,columns=thead_list)
 
         #去除百分比%字符
-        table['溢价率'] = table['溢价率'].str.replace('%','')
+        table['实时溢价'] = table['实时溢价'].str.replace('%','')
         #将字符串转化为数字格式
-        table['溢价率'] = pd.to_numeric(table['溢价率'],errors='ignore')
+        table['实时溢价'] = pd.to_numeric(table['实时溢价'],errors='ignore')
         table['成交额(万元)'] = pd.to_numeric(table['成交额(万元)'],errors='ignore')
 
         #选取溢价率超过2%且成交额>500万且不开放申购的基金，按照降序排列
-        table = table[(table['溢价率'] > 2)  & 
+        table = table[(table['实时溢价'] > 2)  & 
                 (table['限购(元)'].str.contains('暂停') == False) &
-                (table['成交额(万元)'] > 500)].sort_values('溢价率',ascending=False)
+                (table['成交额(万元)'] > 500)].sort_values('实时溢价',ascending=False)
 
         #截取需要用到的字段
-        seleted = table.loc[:,['代码','名称','溢价率','现价','T-1估值']]
+        seleted = table.loc[:,['代码','名称','实时溢价','现价','T-1估值']]
 
         return seleted
