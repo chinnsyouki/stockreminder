@@ -40,18 +40,20 @@ else :
         print('当前没有符合套利条件的基金~')
     else :        
         #编辑集思录消息详情
-        jsl_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
-        for index,fund in selected.iterrows():
-            jsl_desp = jsl_desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
-        
-        jsl_desp = jsl_desp + '数据来源：[集思录]('+ jslData.url +') \n\n'
+        if selected.empty == False:
+            jsl_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
+            for index,fund in selected.iterrows():
+                jsl_desp = jsl_desp + fund['fund_id'] + ' | ' + fund['fund_nm'] + ' | ' + str(fund['discount_rt'])+'% | ' + fund['price'] +' | '+fund['estimate_value'] + '\n\n'
+            
+            jsl_desp = jsl_desp + '数据来源：[集思录]('+ jslData.url +') \n\n'
 
         #编辑haoETF原油基金估值详情
-        oil_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
-        for index,oil in oilLofData.iterrows():
-            oil_desp = oil_desp + oil['代码'] + ' | ' + oil['名称'] + ' | ' + str(oil['实时溢价'])+'% | ' + oil['现价'] +' | '+oil['T-1估值'] + '\n\n'
-        
-        oil_desp = oil_desp + '数据来源：[HaoETF]('+ haoEtfData.url +') \n\n'
+        if oilLofData.empty == False :
+            oil_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | T-1估值 ' +'\n\n'
+            for index,oil in oilLofData.iterrows():
+                oil_desp = oil_desp + oil['代码'] + ' | ' + oil['名称'] + ' | ' + str(oil['实时溢价'])+'% | ' + oil['现价'] +' | '+oil['T-1估值'] + '\n\n'
+            
+            oil_desp = oil_desp + '数据来源：[HaoETF]('+ haoEtfData.url +') \n\n'
 
         #发送消息通知
         title = '当前可进行套利操作！'
