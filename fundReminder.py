@@ -40,6 +40,7 @@ else :
         print('当前没有符合套利条件的基金~')
     else :        
         #编辑集思录消息详情
+        #jsl_desp = ''
         if selected.empty == False:
             jsl_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | 场外估值 ' +'\n\n'
             for index,fund in selected.iterrows():
@@ -48,6 +49,7 @@ else :
             jsl_desp = jsl_desp + '数据来源：[集思录]('+ jslData.url +') \n\n'
 
         #编辑haoETF原油基金估值详情
+        #oil_desp = ''
         if oilLofData.empty == False :
             oil_desp = '基金代码 | 基金名称 | 溢价率 | 场内现价 | T-1估值 ' +'\n\n'
             for index,oil in oilLofData.iterrows():
@@ -57,8 +59,17 @@ else :
 
         #发送消息通知
         title = '当前可进行套利操作！'
-        text = jsl_desp + oil_desp
-        
+        #判断变量是否存在
+        jsl_desp_exist = 'jsl_desp' in locals() or 'jsl_desp' in globals()
+        oil_desp_exist = 'oil_desp' in locals() or 'oil_desp' in globals()
+
+        if jsl_desp_exist == False:
+            text = oil_desp
+        if oil_desp_exist == False :
+            text = jsl_desp
+        if jsl_desp_exist == True & oil_desp_exist == True:
+            text = jsl_desp + oil_desp
+
         wxPusher = Helper.WxPusher()
         wxPusher.sendMessage(title = title , text = text)
         #print('消息内容：\n' + text)
