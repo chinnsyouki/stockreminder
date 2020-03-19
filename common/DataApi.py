@@ -68,10 +68,10 @@ class JslData():
         stocks['volume'] = pd.to_numeric(stocks['volume'],errors='ignore')
 
         #选取出符合套利条件的基金
-        selected = stocks[(stocks['discount_rt'] >= 2) &         #溢价率大于2%
+        selected = stocks[(stocks['discount_rt'] >= 4) &         #溢价率大于2%
         (stocks['apply_status'].str.contains('开放') == True) &   #开放申购
         (stocks['redeem_status'].str.contains('开放') == True) &  #开放赎回
-        (stocks['amount_incr'] > 0 ) &                            #场内有新增份额
+        #(stocks['amount_incr'] > 0 ) &                            #场内有新增份额
         (stocks['fund_nm'].str.contains('ETF') == False) &       #非ETF基金
         (stocks['volume'] >= 500)].sort_values('discount_rt',ascending=False)   #成交量不小于500万
 
@@ -142,8 +142,8 @@ class HaoEtfData():
         table[discount_rt] = pd.to_numeric(table[discount_rt],errors='ignore')
         table['成交额(万元)'] = pd.to_numeric(table['成交额(万元)'],errors='ignore')
 
-        #选取溢价率超过2%且成交额>500万且不开放申购的基金
-        table = table[(table[discount_rt] > 2)  & 
+        #选取溢价率超过4%且成交额>500万且不开放申购的基金
+        table = table[(table[discount_rt] >= 4)  & 
                     (table['限购(元)'].str.contains('暂停') == False) &
                     (table['成交额(万元)'] > 500)].sort_values(discount_rt,ascending=False)
 
