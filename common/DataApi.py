@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import common.Helper as Helper
 from bs4 import BeautifulSoup
+import bs4
 
 
 #从集思录获取数据源
@@ -118,8 +119,12 @@ class HaoEtfData():
         for th in thead.contents :
             if th.string != '\n' :
                 thead_list.append(th.string)
-
-        thead_list.remove('<th>估值误差</th>')
+        
+        #通过判断数据类型去除不需要的隐藏字段
+        for th in thead_list :
+            #print(type(th))
+            if isinstance(th,bs4.element.Comment) == True: 
+                thead_list.remove(th)
         
         #获取表内容
         tbody = soup.body.table.tbody
