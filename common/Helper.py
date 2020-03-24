@@ -55,14 +55,24 @@ class TradeDay():
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
             "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52"
             ]
- 
-        random_agent = USER_AGENTS[randint(0, len(USER_AGENTS)-1)]
-        headers = {'User-Agent':random_agent}
 
         #节假日接口(工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2 )
         server_url = "http://www.easybots.cn/api/holiday.php?d=" + date
-        req = requests.get(url = server_url,headers = headers)
+        
+        #无限循环
+        var = 1
+        while var == 1:
+            random_agent = USER_AGENTS[randint(0, len(USER_AGENTS)-1)]
+            headers = {'User-Agent':random_agent}
+            req = requests.get(url = server_url,headers = headers)
+            #状态码200 表示访问成功！
+            if req.status_code == 200 :
+                var = 0  #退出循环
+            else :
+                var = 1  #继续循环
+        
         result = req.json()[date]
+        
         if result == '0':
             return True
         else:
