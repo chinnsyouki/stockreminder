@@ -138,19 +138,21 @@ class HaoEtfData():
 
         #创建表
         table = pd.DataFrame(tr_list,columns=thead_list)
-        #设定溢价率变量
-        discount_rt = thead_list[2]
+        #设定变量字段名
+        discount_rt = thead_list[2]  #溢价率
+        volume = thead_list[6]       #成交额
+        limit = thead_list[-1]       #申购限额
 
         #去除百分比%字符
         table[discount_rt] = table[discount_rt].str.replace('%','')
         #将字符串转化为数字格式
         table[discount_rt] = pd.to_numeric(table[discount_rt],errors='ignore')
-        table['成交额(万元)'] = pd.to_numeric(table['成交额(万元)'],errors='ignore')
+        table[volume] = pd.to_numeric(table[volume],errors='ignore')
 
         #选取溢价率超过4%且成交额>500万且不开放申购的基金
         table = table[(table[discount_rt] >= 4)  & 
-                    (table['限购(元)'].str.contains('暂停') == False) &
-                    (table['成交额(万元)'] > 500)].sort_values(discount_rt,ascending=False)
+                    (table[limit].str.contains('暂停') == False) &
+                    (table[volume] > 500)].sort_values(discount_rt,ascending=False)
 
         #截取需要用到的字段
         seleted = table.loc[:,['代码','名称',discount_rt,'现价','T-1估值']]
