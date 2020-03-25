@@ -55,7 +55,7 @@ class TradeDay():
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
             "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52"
             ]
- 
+        #随机获取headers
         random_agent = USER_AGENTS[randint(0, len(USER_AGENTS)-1)]
         headers = {'User-Agent':random_agent}
 
