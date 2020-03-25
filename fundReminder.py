@@ -13,13 +13,13 @@ tz = pytz.timezone('Asia/Shanghai')
 #获取当前时间
 now = datetime.datetime.now(tz)
 #格式化日期时间
-today = now.strftime('%Y%m%d')
+today = now.strftime('%Y-%m-%d')
 #测试
 #today = '20200306'
 
 #仅在工作日执行后续操作
 tradeDay = Helper.TradeDay()
-if tradeDay.isHoliday(today) == False :
+if tradeDay.isWorkday(today) == False :
     print('今天不是交易日哟~')
 else :
     #获取集思录数据

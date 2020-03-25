@@ -35,7 +35,7 @@ class WxPusher():
     
 class TradeDay():
     #判断当前是否为工作日
-    def isHoliday(self,date):
+    def isWorkday(self,date):
         #常用的浏览器headers
         USER_AGENTS = [
             "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
@@ -60,10 +60,12 @@ class TradeDay():
         headers = {'User-Agent':random_agent}
 
         #节假日接口(工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2 )
-        server_url = "http://www.easybots.cn/api/holiday.php?d=" + date
+        server_url = "http://timor.tech/api/holiday/info/" + date
         req = requests.get(url = server_url,headers = headers)
-        result = req.json()[date]
-        if result == '0':
+        result = req.json()
+
+        #"type": enum(0, 1, 2, 3), // 节假日类型，分别表示 工作日、周末、节日、调休。
+        if result['type']['type'] == 0:
             return True
         else:
             return False
