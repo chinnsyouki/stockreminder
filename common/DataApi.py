@@ -6,7 +6,7 @@ import pandas as pd
 import common.Helper as Helper
 from bs4 import BeautifulSoup
 import bs4
-
+from w3lib.html import remove_comments
 
 #从集思录获取数据源
 class JslData():
@@ -110,37 +110,34 @@ class HaoEtfData():
             wxPusher.sendMessage(title = '发生未知错误！' , text = '访问haoETF网站获取数据失败，请检查代码接口！')
             raise
 
-        soup = BeautifulSoup(html,features='lxml')
+        #去除不必要的注释
+        web_content = remove_comments(html)
+        soup = BeautifulSoup(web_content,features='lxml')
 
         #获取表头
-        thead = soup.body.table.thead.tr
+        thead = soup.body.table.thead.tr.find_all('th')
 
         thead_list = []
-        for th in thead.contents :
-            if th.string != '\n' :
-                thead_list.append(th.string)
+        for child in thead:
+            thead_list.append(child.text)
         
-        #通过判断数据类型去除不需要的隐藏字段
-        for th in thead_list :
-            #print(type(th))
-            if isinstance(th,bs4.element.Comment) == True: 
-                thead_list.remove(th)
         
         #获取表内容
-        tbody = soup.body.table.tbody
+        tbody = soup.body.table.tbody.find_all('tr')
 
         tr_list = []
-        for tr in tbody.find_all('tr'):
-            td_list = []
-            for td in tr.find_all('td'):
-                td_list.append(td.string)
+        for tr in tbody:
+            td_list =  []
+            for td in tr:
+                if td.string != '\n' :
+                    td_list.append(td.string)
             tr_list.append(td_list)
 
         #创建表
         table = pd.DataFrame(tr_list,columns=thead_list)
         #设定变量字段名
-        discount_rt = thead_list[2]  #溢价率
-        volume = thead_list[6]       #成交额
+        discount_rt = thead_list[5]  #溢价率
+        volume = thead_list[9]       #成交额
         limit = thead_list[-1]       #申购限额
 
         #去除百分比%字符
