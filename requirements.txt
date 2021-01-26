@@ -1,5 +1,5 @@
 requests==2.22.0
 pandas==0.25.0
 beautifulsoup4==4.8.2
-lxml==4.5.0
+lxml==4.6.2
 w3lib==1.21.0
