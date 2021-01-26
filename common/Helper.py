@@ -10,8 +10,8 @@ class WxPusher():
         self.serverUrl = 'http://wxpusher.zjiecode.com/api/send/message'
         #证券交易提醒的token
         self.appToken = "AT_awCxNJvY4xqWek40uB7xXUvbS8X0hUtk"
-        #发送目标的UID，是一个数组！！！(目前仅发送给我一个人)
-        self.uids = [ "UID_4KEgQdVFBw7ciEX4u0A9HTmuHoEL" ]
+        #发送目标的UID，是一个数组！！！(目前仅发送给关注我的人)
+        self.uids = [ "UID_4KEgQdVFBw7ciEX4u0A9HTmuHoEL","UID_2gaVeBmrkw9zeqSi4ouZdKWBgi2B" ]
 
 
     #发送微信消息提醒
